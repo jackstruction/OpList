@@ -39,6 +39,8 @@ const myListAbi = [{"inputs":[{"internalType":"address","name":"creator","type":
 {"internalType":"string","name":"opinion","type":"string"},
 {"internalType":"uint256","name":"opTime","type":"uint256"}],"stateMutability":"view","type":"function"},
 {"stateMutability":"payable","type":"receive"}];
+const myListProvider = new ethers.Contract(myListAddress, myListAbi, provider);
+const myListSigner = new ethers.Contract(myListAddress, myListAbi, signer);
 //async uses await pattern "easier to read"
 const enableEth = async () => {
     accounts = await window.ethereum.request({ method: 'eth_requestAccounts'}).catch((err)=>{
@@ -71,7 +73,7 @@ const createList = async() => {
     const tx = listWithSigner.create();
     document.getElementById("OpListAddress").innerHTML = tx;
 }
-
+/*
 const getList = async() => {
     var input = document.getElementById("getListWallet").value;
     console.log(input);
@@ -82,7 +84,13 @@ const getList = async() => {
     document.getElementById("OpListAddress").innerHTML = reinput;
     
 }
-
+*/
+const getList = async() => {
+    let input = document.getElementById('getListWallet').value;
+    var tx = console.log(input);
+    listContract.getList(input);
+        console.log(tx);
+}
 
 const tossACoin = async() => {
 
