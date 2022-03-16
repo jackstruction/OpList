@@ -1,4 +1,12 @@
-const provider = new ethers.providers.Web3Provider(window.ethereum);
+//const provider = new ethers.providers.Web3Provider(window.ethereum);
+// If you don't specify a //url//, Ethers connects to the default 
+// (i.e. ``http:/\/localhost:8545``)
+const provider = new ethers.providers.JsonRpcProvider();
+
+// The provider also allows signing transactions to
+// send ether and pay to change state within the blockchain.
+// For this, we need the account signer...
+
 const signer = provider.getSigner()
 let accounts;
 if(window["ethereum"] !== undefined){
@@ -6,9 +14,251 @@ if(window["ethereum"] !== undefined){
 }
 window.onload = function() {console.log("dApp is loaded");}
 
-const listAddress = "0x3D7aB668610d8b3e50dA39cE94882Dec761d3769"; //polygon contract
-const listAbi = [{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"TheOpListList","outputs":[{"internalType":"contract OpList","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"create","outputs":[{"internalType":"contract OpList","name":"","type":"address"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"created","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"wallet","type":"address"}],"name":"getList","outputs":[{"internalType":"address","name":"listAddress","type":"address"},{"internalType":"uint256","name":"timeCreated","type":"uint256"},{"internalType":"uint256","name":"txnTime","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"oplists","outputs":[{"internalType":"contract OpList","name":"","type":"address"}],"stateMutability":"view","type":"function"}];
+
+const listAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3"; //Always the deployed address for the contract on localhost apparently
+const listAbi = [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "creator",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "creator",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "op",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "opTime",
+          "type": "uint256"
+        }
+      ],
+      "name": "OpCreated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "OWNER",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "op",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "reOpTime",
+          "type": "uint256"
+        }
+      ],
+      "name": "ReOpCreated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "user",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "Rugged",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "tipper",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "tipAmount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "tip",
+          "type": "bytes32"
+        }
+      ],
+      "name": "TipReceived",
+      "type": "event"
+    },
+    {
+      "stateMutability": "payable",
+      "type": "fallback"
+    },
+    {
+      "inputs": [],
+      "name": "OWNER",
+      "outputs": [
+        {
+          "internalType": "address payable",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "ReOp",
+      "outputs": [
+        {
+          "internalType": "bytes",
+          "name": "",
+          "type": "bytes"
+        }
+      ],
+      "stateMutability": "payable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "Rug",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "createdTime",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "lastPost",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "opinion",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "opTime",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "opId",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_op",
+          "type": "string"
+        }
+      ],
+      "name": "postOp",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "posts",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "opinion",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "opTime",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "stateMutability": "payable",
+      "type": "receive"
+    }
+  ];
+
 const listContract = new ethers.Contract(listAddress, listAbi, provider);
+
+console.log(address(listContract));
 //const listSigned = listContract.connect(signer);
 const listWithSigner = new ethers.Contract(listAddress, listAbi, signer);
 //when using local node
@@ -85,11 +335,11 @@ const getList = async() => {
     
 }
 */
-const getList = async() => {
+async function getList() {
     let input = document.getElementById('getListWallet').value;
     var tx = console.log(input);
     listContract.getList(input);
-        console.log(tx);
+    console.log(tx);
 }
 
 const tossACoin = async() => {
